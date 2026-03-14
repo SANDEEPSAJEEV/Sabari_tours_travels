@@ -1,6 +1,5 @@
 import express from 'express';
 import pool from '../db.js';
-import { authenticateToken } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -18,18 +17,17 @@ router.get('/', async (req, res) => {
 });
 
 // ── POST create review ────────────────────────────────────────────────────────
-router.post('/', authenticateToken, async (req, res) => {
+router.post('/', async (req, res) => {
+    const { location, rating, text, userId, name, role } = req.body;
+
     // SECURITY: Admins cannot write reviews. User must be a standard user.
-    if (req.user.role === 'admin') {
+    if (role === 'admin') {
         return res.status(403).json({ error: 'Admins cannot write testimonials.' });
     }
 
-    const { location, rating, text } = req.body;
-
-    // SECURITY: We completely ignore any incoming user_id or name in the payload.
-    // Instead, we force the user_id and name directly from the verified auth token.
-    const userId = req.user.id;
-    const name = req.user.name;
+    if (!userId || !name) {
+        return res.status(401).json({ error: 'You must be logged in to write a review.' });
+    }
 
     if (!rating || !text) {
         return res.status(400).json({ error: 'Rating and text are required' });
@@ -50,9 +48,9 @@ router.post('/', authenticateToken, async (req, res) => {
 });
 
 // ── PUT update review ─────────────────────────────────────────────────────────
-router.put('/:id', authenticateToken, async (req, res) => {
+router.put('/:id', async (req, res) => {
     const { id } = req.params;
-    const { rating, text } = req.body;
+    const { rating, text, userId } = req.body;
 
     try {
         // Step 1: Find the review
@@ -66,7 +64,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
 
         // SECURITY: ONLY the user who wrote the review can edit it.
         // Even Admins are blocked from editing someone else's review.
-        if (review.user_id !== req.user.id) {
+        if (review.user_id !== userId) {
             return res.status(403).json({ error: 'You do not have permission to edit this review.' });
         }
 
@@ -88,8 +86,12 @@ router.put('/:id', authenticateToken, async (req, res) => {
 });
 
 // ── DELETE review ─────────────────────────────────────────────────────────────
-router.delete('/:id', authenticateToken, async (req, res) => {
+router.delete('/:id', async (req, res) => {
     const { id } = req.params;
+    // We expect userId and role in headers or query, since DELETE bodies are non-standard.
+    // Let's use custom headers for this simple auth model
+    const userId = parseInt(req.headers['x-user-id']);
+    const role = req.headers['x-user-role'];
 
     try {
         // Step 1: Find the review
@@ -102,8 +104,8 @@ router.delete('/:id', authenticateToken, async (req, res) => {
         const review = checkResult.rows[0];
 
         // SECURITY: Only the author OR an Admin can delete a review.
-        const isOwner = review.user_id === req.user.id;
-        const isAdmin = req.user.role === 'admin';
+        const isOwner = review.user_id === userId;
+        const isAdmin = role === 'admin';
 
         if (!isOwner && !isAdmin) {
             return res.status(403).json({ error: 'You do not have permission to delete this review.' });

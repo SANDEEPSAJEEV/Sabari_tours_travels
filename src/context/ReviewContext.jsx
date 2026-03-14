@@ -1,13 +1,12 @@
+// src/context/ReviewContext.jsx
 import { createContext, useContext, useState, useEffect } from 'react';
-import { testimonials as defaultTestimonials } from '../data/data';
-
 import { API_BASE_URL } from '../config';
 import { useAuth } from './AuthContext';
 
 const ReviewContext = createContext();
 
 export function ReviewProvider({ children }) {
-    const { token } = useAuth();
+    const { currentUser } = useAuth();
     const [reviews, setReviews] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -30,15 +29,19 @@ export function ReviewProvider({ children }) {
     }, []);
 
     const addReview = async (reviewData) => {
-        if (!token) return;
+        if (!currentUser) return;
         try {
             const res = await fetch(`${API_BASE_URL}/api/reviews`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+                    'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(reviewData)
+                body: JSON.stringify({
+                    ...reviewData,
+                    userId: currentUser.id,
+                    name: currentUser.name,
+                    role: currentUser.role
+                })
             });
             if (res.ok) {
                 const newReview = await res.json();
@@ -54,15 +57,17 @@ export function ReviewProvider({ children }) {
     };
 
     const updateReview = async (id, updatedData) => {
-        if (!token) return;
+        if (!currentUser) return;
         try {
             const res = await fetch(`${API_BASE_URL}/api/reviews/${id}`, {
                 method: 'PUT',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+                    'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(updatedData)
+                body: JSON.stringify({
+                    ...updatedData,
+                    userId: currentUser.id
+                })
             });
             if (res.ok) {
                 const updated = await res.json();
@@ -78,12 +83,13 @@ export function ReviewProvider({ children }) {
     };
 
     const deleteReview = async (id) => {
-        if (!token) return;
+        if (!currentUser) return;
         try {
             const res = await fetch(`${API_BASE_URL}/api/reviews/${id}`, {
                 method: 'DELETE',
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    'x-user-id': currentUser.id.toString(),
+                    'x-user-role': currentUser.role || 'user'
                 }
             });
             if (res.ok) {
