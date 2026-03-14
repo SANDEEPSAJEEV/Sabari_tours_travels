@@ -67,14 +67,23 @@ export default function ContactSection() {
                                 <div className="method-icon">📞</div>
                                 <div>
                                     <h4>Call Us</h4>
-                                    <p>{settings.phone_display}</p>
+                                    <p><a href={`tel:${settings.phone_display?.replace(/\D/g, '')}`} style={{ color: 'inherit', textDecoration: 'none' }}>{settings.phone_display}</a></p>
                                 </div>
                             </div>
+                            {settings.whatsapp_number && (
+                                <div className="contact-method">
+                                    <div className="method-icon" style={{ background: 'linear-gradient(135deg, #128C7E, #25D366)' }}>💬</div>
+                                    <div>
+                                        <h4>WhatsApp Us</h4>
+                                        <p><a href={getWhatsAppLink()} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none' }}>+{settings.whatsapp_number}</a></p>
+                                    </div>
+                                </div>
+                            )}
                             <div className="contact-method">
                                 <div className="method-icon">✉️</div>
                                 <div>
                                     <h4>Email Us</h4>
-                                    <p>{settings.email}</p>
+                                    <p><a href={`mailto:${settings.email}`} style={{ color: 'inherit', textDecoration: 'none' }}>{settings.email}</a></p>
                                 </div>
                             </div>
                         </div>
@@ -207,6 +216,9 @@ export default function ContactSection() {
                     color: rgba(255, 255, 255, 0.6);
                     font-size: 0.95rem;
                 }
+                .contact-method p a:hover {
+                    color: var(--accent-400) !important;
+                }
                 .wa-promo {
                     background: rgba(34, 197, 94, 0.1);
                     border: 1px solid rgba(34, 197, 94, 0.2);
@@ -258,6 +270,7 @@ export default function ContactSection() {
                     color: white;
                     font-size: 1rem;
                     transition: 0.3s;
+                    box-sizing: border-box;
                 }
                 .form-group input:focus, .form-group textarea:focus {
                     border-color: var(--accent-500);
@@ -289,8 +302,14 @@ export default function ContactSection() {
                     }
                 }
                 @media (max-width: 576px) {
-                    .form-row { grid-template-columns: 1fr; }
-                    .contact-form-card { padding: 25px; }
+                    .contact-section { padding: 40px 0; }
+                    .form-row { grid-template-columns: 1fr; gap: 0; }
+                    .contact-form-card { padding: 25px 20px; border-radius: 16px; }
+                    .contact-method h4 { font-size: 0.95rem; }
+                    .contact-method p { font-size: 0.85rem; }
+                    .wa-promo { padding: 15px; }
+                    .section-title { font-size: 2rem !important; }
+                    .section-subtitle { font-size: 0.9rem !important; }
                 }
             `}</style>
         </section>

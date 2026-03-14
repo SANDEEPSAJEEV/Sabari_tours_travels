@@ -1,5 +1,8 @@
+import { useSettings } from '../context/SettingsContext';
+
 export default function Footer() {
     const currentYear = new Date().getFullYear();
+    const { settings, getWhatsAppLink } = useSettings();
 
     return (
         <footer className="footer" id="footer">
@@ -42,16 +45,22 @@ export default function Footer() {
                         <h4 className="footer-heading">Contact Us</h4>
                         <div className="footer-contact-item">
                             <span className="icon">📍</span>
-                            <span>Sabari Tours and Travels,<br />Kerala, India</span>
+                            <span>{settings.address}</span>
                         </div>
                         <div className="footer-contact-item">
                             <span className="icon">📞</span>
-                            <span>+91 98765 43210</span>
+                            <span>{settings.phone_display}</span>
                         </div>
                         <div className="footer-contact-item">
                             <span className="icon">✉️</span>
-                            <span>info@sabaritours.com</span>
+                            <span>{settings.email}</span>
                         </div>
+                        {settings.whatsapp_number && (
+                            <div className="footer-contact-item">
+                                <span className="icon">💬</span>
+                                <span>+{settings.whatsapp_number}</span>
+                            </div>
+                        )}
                         <div className="footer-contact-item">
                             <span className="icon">⏰</span>
                             <span>Mon - Sat: 9AM - 8PM</span>
@@ -63,7 +72,7 @@ export default function Footer() {
                     <p>© {currentYear} Sabari Tours and Travels. All Rights Reserved.</p>
                     <div className="footer-socials">
                         <a
-                            href="https://wa.me/919876543210?text=Hi%20Sabari%20Tours!"
+                            href={getWhatsAppLink()}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="footer-social"

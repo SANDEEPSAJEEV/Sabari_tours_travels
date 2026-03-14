@@ -55,7 +55,7 @@ export default function Navbar() {
                         )}
 
                         <a
-                            href="https://wa.me/919876543210?text=Hi%20Sabari%20Tours!%20I'm%20interested%20in%20your%20tour%20packages.%20Can%20you%20help%20me%20plan%20a%20trip?"
+                            href={getWhatsAppLink()}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="btn-primary navbar-cta"
@@ -96,7 +96,7 @@ export default function Navbar() {
                 )}
 
                 <a
-                    href="https://wa.me/919876543210?text=Hi%20Sabari%20Tours!%20I'm%20interested%20in%20your%20tour%20packages."
+                    href={getWhatsAppLink()}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="btn-primary"
