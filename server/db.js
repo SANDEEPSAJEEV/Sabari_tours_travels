@@ -11,6 +11,9 @@ const pool = new Pool({
     database: process.env.DB_NAME || 'sabari_tours',
     user: process.env.DB_USER || 'postgres',
     password: process.env.DB_PASSWORD || '123',
+    ssl: process.env.NODE_ENV === 'production' || process.env.DB_HOST?.includes('render.com')
+        ? { rejectUnauthorized: false }
+        : false
 });
 
 // Test connection on startup
