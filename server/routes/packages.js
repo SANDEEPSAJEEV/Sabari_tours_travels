@@ -31,6 +31,20 @@ router.get('/', async (req, res) => {
     }
 });
 
+// ── GET all distinct categories ───────────────────────────────────────────────
+router.get('/categories', async (req, res) => {
+    try {
+        const result = await pool.query(
+            'SELECT DISTINCT category FROM packages WHERE category IS NOT NULL ORDER BY category ASC'
+        );
+        const categories = result.rows.map(row => row.category);
+        res.json(categories);
+    } catch (err) {
+        console.error('GET /api/packages/categories error:', err);
+        res.status(500).json({ error: 'Failed to fetch categories' });
+    }
+});
+
 // ── POST create package ───────────────────────────────────────────────────────
 router.post('/', async (req, res) => {
     const { title, description, duration, price, category, image, imageData, highlights, places } = req.body;

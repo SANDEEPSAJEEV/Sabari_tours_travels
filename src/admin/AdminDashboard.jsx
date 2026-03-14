@@ -6,15 +6,24 @@ import PackageFormModal from '../components/PackageFormModal';
 import EnquiriesTable from './EnquiriesTable';
 import AdminSettings from './AdminSettings';
 
-const categoryInfo = {
-    kerala: { label: '🌴 Kerala', color: '#22c55e' },
-    outside: { label: '✈️ Outside Kerala', color: '#3b82f6' },
-    pilgrim: { label: '🙏 Pilgrimage', color: '#f59e0b' }
+const getCategoryInfo = (cat) => {
+    const defaultInfo = {
+        kerala: { label: '🌴 Kerala', color: '#22c55e' },
+        outside: { label: '✈️ Outside Kerala', color: '#3b82f6' },
+        pilgrim: { label: '🙏 Pilgrimage', color: '#f59e0b' }
+    };
+    if (defaultInfo[cat]) return defaultInfo[cat];
+    // Generate a pseudo-random color based on string for dynamic categories
+    const colors = ['#8b5cf6', '#ec4899', '#14b8a6', '#f43f5e', '#6366f1'];
+    let hash = 0;
+    for (let i = 0; i < cat.length; i++) hash = cat.charCodeAt(i) + ((hash << 5) - hash);
+    const color = colors[Math.abs(hash) % colors.length];
+    return { label: `🏷️ ${cat.charAt(0).toUpperCase() + cat.slice(1)}`, color };
 };
 
 export default function AdminDashboard() {
     const navigate = useNavigate();
-    const { packages, deletePackage, resetToDefault } = usePackages();
+    const { packages, categories, deletePackage, resetToDefault } = usePackages();
     const { logout, currentUser } = useAuth();
     const [currentTab, setCurrentTab] = useState('packages'); // 'packages' or 'enquiries'
     const [modalOpen, setModalOpen] = useState(false);
@@ -57,12 +66,15 @@ export default function AdminDashboard() {
         return matchCat && matchSearch;
     });
 
-    const stats = {
-        total: packages.length,
-        kerala: packages.filter(p => p.category === 'kerala').length,
-        outside: packages.filter(p => p.category === 'outside').length,
-        pilgrim: packages.filter(p => p.category === 'pilgrim').length,
-    };
+    // Dynamically calculate stats for all categories
+    const categoryStats = categories.map(cat => ({
+        key: cat,
+        info: getCategoryInfo(cat),
+        count: packages.filter(p => p.category === cat).length
+    }));
+
+    // Sort so top 3 categories show up in stats first (or keep standard behavior)
+    categoryStats.sort((a, b) => b.count - a.count);
 
     return (
         <div className="admindash">
@@ -133,21 +145,15 @@ export default function AdminDashboard() {
                         {/* Stats */}
                         <div className="admindash-stats">
                             <div className="adm-stat-card">
-                                <div className="adm-stat-num">{stats.total}</div>
+                                <div className="adm-stat-num">{packages.length}</div>
                                 <div className="adm-stat-label">Total Packages</div>
                             </div>
-                            <div className="adm-stat-card" style={{ borderColor: '#22c55e' }}>
-                                <div className="adm-stat-num" style={{ color: '#22c55e' }}>{stats.kerala}</div>
-                                <div className="adm-stat-label">Kerala Tours</div>
-                            </div>
-                            <div className="adm-stat-card" style={{ borderColor: '#3b82f6' }}>
-                                <div className="adm-stat-num" style={{ color: '#3b82f6' }}>{stats.outside}</div>
-                                <div className="adm-stat-label">Outside Kerala</div>
-                            </div>
-                            <div className="adm-stat-card" style={{ borderColor: '#f59e0b' }}>
-                                <div className="adm-stat-num" style={{ color: '#f59e0b' }}>{stats.pilgrim}</div>
-                                <div className="adm-stat-label">Pilgrimage</div>
-                            </div>
+                            {categoryStats.slice(0, 3).map(stat => (
+                                <div key={stat.key} className="adm-stat-card" style={{ borderColor: stat.info.color }}>
+                                    <div className="adm-stat-num" style={{ color: stat.info.color }}>{stat.count}</div>
+                                    <div className="adm-stat-label">{stat.info.label.replace(/[^a-zA-Z ]/g, '').trim()} Tours</div>
+                                </div>
+                            ))}
                         </div>
 
                         {/* Filters */}
@@ -160,15 +166,18 @@ export default function AdminDashboard() {
                                 onChange={e => setSearch(e.target.value)}
                             />
                             <div className="adm-filter-tabs">
-                                {['all', 'kerala', 'outside', 'pilgrim'].map(cat => (
-                                    <button
-                                        key={cat}
-                                        className={`adm-filter-tab ${filterCat === cat ? 'active' : ''}`}
-                                        onClick={() => setFilterCat(cat)}
-                                    >
-                                        {cat === 'all' ? 'All' : categoryInfo[cat]?.label}
-                                    </button>
-                                ))}
+                                {['all', ...categories].map(cat => {
+                                    const info = cat === 'all' ? { label: 'All' } : getCategoryInfo(cat);
+                                    return (
+                                        <button
+                                            key={cat}
+                                            className={`adm-filter-tab ${filterCat === cat ? 'active' : ''}`}
+                                            onClick={() => setFilterCat(cat)}
+                                        >
+                                            {info.label}
+                                        </button>
+                                    );
+                                })}
                             </div>
                         </div>
 
@@ -176,7 +185,7 @@ export default function AdminDashboard() {
                         <div className="admindash-grid">
                             {filtered.map(pkg => {
                                 const imgSrc = pkg.imageData || pkg.image;
-                                const cat = categoryInfo[pkg.category];
+                                const cat = getCategoryInfo(pkg.category);
                                 return (
                                     <div key={pkg.id} className="adm-pkg-card">
                                         <div className="adm-pkg-img-wrapper">
@@ -186,8 +195,8 @@ export default function AdminDashboard() {
                                                 className="adm-pkg-img"
                                                 onError={e => { e.target.src = 'https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?w=400&q=60'; }}
                                             />
-                                            <div className="adm-pkg-cat-badge" style={{ background: cat?.color }}>
-                                                {cat?.label}
+                                            <div className="adm-pkg-cat-badge" style={{ background: cat.color }}>
+                                                {cat.label}
                                             </div>
                                         </div>
                                         <div className="adm-pkg-body">

@@ -4,17 +4,23 @@ import { useAuth } from '../context/AuthContext';
 import PackageCard from './PackageCard';
 import PackageFormModal from './PackageFormModal';
 
-const filters = [
-    { key: 'all', label: 'All Packages' },
-    { key: 'kerala', label: '🌴 Kerala' },
-    { key: 'outside', label: '✈️ Outside Kerala' },
-    { key: 'pilgrim', label: '🙏 Pilgrimage' }
-];
-
 export default function PackagesSection() {
-    const { packages } = usePackages();
+    const { packages, categories } = usePackages();
     const { isAdmin } = useAuth();
     const [activeFilter, setActiveFilter] = useState('all');
+
+    // Dynamically build filter tabs based on DB categories
+    const filters = [
+        { key: 'all', label: 'All Packages' },
+        ...categories.map(c => ({
+            key: c,
+            // Fallback hardcoded icons for legacy categories, generic tag for new ones
+            label: c === 'kerala' ? '🌴 Kerala' :
+                c === 'outside' ? '✈️ Outside Kerala' :
+                    c === 'pilgrim' ? '🙏 Pilgrimage' :
+                        `🏷️ ${c.charAt(0).toUpperCase() + c.slice(1)}`
+        }))
+    ];
     const [modalOpen, setModalOpen] = useState(false);
     const [editingPkg, setEditingPkg] = useState(null);
 

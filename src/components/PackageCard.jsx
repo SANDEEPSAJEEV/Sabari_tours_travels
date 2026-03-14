@@ -1,21 +1,26 @@
 import { useAuth } from '../context/AuthContext';
 import { usePackages } from '../context/PackageContext';
+import { useSettings } from '../context/SettingsContext';
 
 export default function PackageCard({ pkg, onEdit }) {
     const { isAdmin } = useAuth();
     const { deletePackage } = usePackages();
+    const { getWhatsAppLink } = useSettings();
 
-    const categoryLabel = {
-        kerala: 'Kerala',
-        outside: 'Outside Kerala',
-        pilgrim: 'Pilgrimage'
+    // Map known categories to pretty labels, otherwise capitalize custom categories
+    const getCategoryLabel = (cat) => {
+        const labels = {
+            kerala: 'Kerala',
+            outside: 'Outside Kerala',
+            pilgrim: 'Pilgrimage'
+        };
+        return labels[cat] || (cat ? cat.charAt(0).toUpperCase() + cat.slice(1) : 'Package');
     };
 
     const imgSrc = pkg.imageData || pkg.image;
 
-    const whatsappMessage = encodeURIComponent(
-        `Hi Sabari Tours! I'm interested in the "${pkg.title}" package (${pkg.duration}, ${pkg.price}). Can you share more details?`
-    );
+    const whatsappMessage =
+        `Hi Sabari Tours! I'm interested in the "${pkg.title}" package (${pkg.duration}, ${pkg.price}). Can you share more details?`;
 
     return (
         <div className="package-card" style={{ position: 'relative' }}>
@@ -39,7 +44,7 @@ export default function PackageCard({ pkg, onEdit }) {
             <div className="package-card-image">
                 <img src={imgSrc} alt={pkg.title} loading="lazy" />
                 <div className="package-card-badge">
-                    {categoryLabel[pkg.category] || pkg.category}
+                    {getCategoryLabel(pkg.category)}
                 </div>
             </div>
 
@@ -54,7 +59,7 @@ export default function PackageCard({ pkg, onEdit }) {
                     </div>
                     <div className="package-meta-item">
                         <span className="icon">📍</span>
-                        <span>{categoryLabel[pkg.category] || pkg.category}</span>
+                        <span>{getCategoryLabel(pkg.category)}</span>
                     </div>
                 </div>
 
@@ -85,7 +90,7 @@ export default function PackageCard({ pkg, onEdit }) {
                         {pkg.price} <span>/ person</span>
                     </div>
                     <a
-                        href={`https://wa.me/919876543210?text=${whatsappMessage}`}
+                        href={getWhatsAppLink(whatsappMessage)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="btn-primary package-book-btn"

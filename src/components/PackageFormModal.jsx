@@ -14,7 +14,7 @@ const emptyForm = {
 };
 
 export default function PackageFormModal({ isOpen, onClose, editingPkg }) {
-    const { addPackage, updatePackage } = usePackages();
+    const { addPackage, updatePackage, categories } = usePackages();
     const [form, setForm] = useState(emptyForm);
     const [highlightInput, setHighlightInput] = useState('');
     const [placeInput, setPlaceInput] = useState('');
@@ -97,7 +97,7 @@ export default function PackageFormModal({ isOpen, onClose, editingPkg }) {
             description: form.description,
             duration: form.duration,
             price: form.price,
-            category: form.category,
+            category: form.category === 'new' ? form.customCategory : form.category,
             image: form.imageData ? '' : form.image,
             imageData: form.imageData || null,
             highlights: form.highlights,
@@ -178,13 +178,37 @@ export default function PackageFormModal({ isOpen, onClose, editingPkg }) {
                                 <div className="pkg-field">
                                     <label>Category *</label>
                                     <select
-                                        value={form.category}
-                                        onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
+                                        value={form.category === 'new' ? 'new' : form.category}
+                                        onChange={e => {
+                                            const val = e.target.value;
+                                            if (val === 'new') {
+                                                setForm(f => ({ ...f, category: 'new' }));
+                                            } else {
+                                                setForm(f => ({ ...f, category: val }));
+                                            }
+                                        }}
+                                        required
                                     >
-                                        <option value="kerala">🌴 Kerala</option>
-                                        <option value="outside">✈️ Outside Kerala</option>
-                                        <option value="pilgrim">🙏 Pilgrimage</option>
+                                        <option value="" disabled>Select a category...</option>
+                                        {categories.map(cat => (
+                                            <option key={cat} value={cat}>🏷️ {cat}</option>
+                                        ))}
+                                        <option value="new" style={{ fontWeight: 'bold', color: 'var(--accent-500)' }}>
+                                            ➕ Add New Category...
+                                        </option>
                                     </select>
+
+                                    {form.category === 'new' && (
+                                        <input
+                                            type="text"
+                                            placeholder="Type new category name..."
+                                            className="mt-2"
+                                            style={{ marginTop: '8px' }}
+                                            onChange={e => setForm(f => ({ ...f, customCategory: e.target.value }))}
+                                            required
+                                            autoFocus
+                                        />
+                                    )}
                                 </div>
 
                                 {/* Places Included */}

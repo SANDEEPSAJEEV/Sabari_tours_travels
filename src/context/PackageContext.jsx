@@ -9,6 +9,7 @@ const API_URL = `${API_BASE_URL}/api/packages`;
 
 export function PackageProvider({ children }) {
     const [packages, setPackages] = useState([]);
+    const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -17,16 +18,29 @@ export function PackageProvider({ children }) {
         setLoading(true);
         setError(null);
         try {
+            // Fetch packages
             const res = await fetch(API_URL);
             if (!res.ok) throw new Error(`Server responded ${res.status}`);
             const data = await res.json();
             setPackages(data);
+
+            // Fetch dynamic categories
+            try {
+                const catRes = await fetch(`${API_URL}/categories`);
+                if (catRes.ok) {
+                    const catData = await catRes.json();
+                    setCategories(catData);
+                }
+            } catch (err) {
+                console.warn('Could not fetch categories:', err);
+            }
         } catch (err) {
             console.warn('API unavailable, falling back to defaults:', err.message);
             // Graceful fallback to hardcoded defaults if server is down
             setError('Could not connect to server. Showing cached data.');
             const stored = localStorage.getItem('sabari-tours-packages');
             setPackages(stored ? JSON.parse(stored) : defaultPackages);
+            setCategories(['kerala', 'outside', 'pilgrim']);
         } finally {
             setLoading(false);
         }
@@ -47,12 +61,21 @@ export function PackageProvider({ children }) {
             if (!res.ok) throw new Error(`Server error ${res.status}`);
             const newPkg = await res.json();
             setPackages(prev => [...prev, newPkg]);
+
+            // If it's a new category, add it to the list dynamically
+            if (!categories.includes(newPkg.category) && newPkg.category) {
+                setCategories(prev => [...prev, newPkg.category].sort());
+            }
+
             return newPkg;
         } catch (err) {
             console.error('addPackage error:', err);
             // Optimistic local fallback
             const newPkg = { ...pkg, id: Date.now() };
             setPackages(prev => [...prev, newPkg]);
+            if (!categories.includes(newPkg.category) && newPkg.category) {
+                setCategories(prev => [...prev, newPkg.category].sort());
+            }
             return newPkg;
         }
     };
@@ -68,9 +91,16 @@ export function PackageProvider({ children }) {
             if (!res.ok) throw new Error(`Server error ${res.status}`);
             const updated = await res.json();
             setPackages(prev => prev.map(p => p.id === id ? updated : p));
+
+            if (updates.category && !categories.includes(updates.category)) {
+                setCategories(prev => [...prev, updates.category].sort());
+            }
         } catch (err) {
             console.error('updatePackage error:', err);
             setPackages(prev => prev.map(p => p.id === id ? { ...p, ...updates } : p));
+            if (updates.category && !categories.includes(updates.category)) {
+                setCategories(prev => [...prev, updates.category].sort());
+            }
         }
     };
 
@@ -94,6 +124,7 @@ export function PackageProvider({ children }) {
     return (
         <PackageContext.Provider value={{
             packages,
+            categories,
             loading,
             error,
             addPackage,
