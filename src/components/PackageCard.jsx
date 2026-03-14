@@ -1,6 +1,7 @@
 import { useAuth } from '../context/AuthContext';
 import { usePackages } from '../context/PackageContext';
 import { useSettings } from '../context/SettingsContext';
+import { API_BASE_URL } from '../config';
 
 export default function PackageCard({ pkg, onEdit }) {
     const { isAdmin } = useAuth();
@@ -17,7 +18,13 @@ export default function PackageCard({ pkg, onEdit }) {
         return labels[cat] || (cat ? cat.charAt(0).toUpperCase() + cat.slice(1) : 'Package');
     };
 
-    const imgSrc = pkg.imageData || pkg.image;
+    const resolveImageUrl = (url) => {
+        if (!url) return '';
+        if (url.startsWith('/uploads/')) return `${API_BASE_URL}${url}`;
+        return url;
+    };
+
+    const imgSrc = pkg.imageData || resolveImageUrl(pkg.image);
 
     const whatsappMessage =
         `Hi Sabari Tours! I'm interested in the "${pkg.title}" package (${pkg.duration}, ${pkg.price}). Can you share more details?`;

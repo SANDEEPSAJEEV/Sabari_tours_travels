@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { usePackages } from '../context/PackageContext';
+import { API_BASE_URL } from '../config';
 
 const emptyForm = {
     title: '',
@@ -11,6 +12,12 @@ const emptyForm = {
     imageData: null,
     highlights: [],
     places: []
+};
+
+const resolveImageUrl = (url) => {
+    if (!url) return '';
+    if (url.startsWith('/uploads/')) return `${API_BASE_URL}${url}`;
+    return url;
 };
 
 export default function PackageFormModal({ isOpen, onClose, editingPkg }) {
@@ -41,7 +48,7 @@ export default function PackageFormModal({ isOpen, onClose, editingPkg }) {
                 highlights,
                 places
             });
-            setImgPreview(editingPkg.imageData || editingPkg.image || '');
+            setImgPreview(editingPkg.imageData || resolveImageUrl(editingPkg.image) || '');
             setImgMode(editingPkg.imageData ? 'upload' : 'url');
         } else {
             setForm(emptyForm);
@@ -307,7 +314,7 @@ export default function PackageFormModal({ isOpen, onClose, editingPkg }) {
                                                 <button
                                                     type="button"
                                                     className="pkg-img-remove"
-                                                    onClick={() => { setForm(f => ({ ...f, imageData: null })); setImgPreview(form.image || ''); }}
+                                                    onClick={() => { setForm(f => ({ ...f, imageData: null })); setImgPreview(resolveImageUrl(form.image) || ''); }}
                                                 >
                                                     ✕ Remove Photo
                                                 </button>

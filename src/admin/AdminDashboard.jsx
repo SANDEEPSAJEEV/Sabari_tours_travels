@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import PackageFormModal from '../components/PackageFormModal';
 import EnquiriesTable from './EnquiriesTable';
 import AdminSettings from './AdminSettings';
+import { API_BASE_URL } from '../config';
 
 const getCategoryInfo = (cat) => {
     const defaultInfo = {
@@ -184,7 +185,12 @@ export default function AdminDashboard() {
                         {/* Package Cards Grid */}
                         <div className="admindash-grid">
                             {filtered.map(pkg => {
-                                const imgSrc = pkg.imageData || pkg.image;
+                                const resolveImageUrl = (url) => {
+                                    if (!url) return '';
+                                    if (url.startsWith('/uploads/')) return `${API_BASE_URL}${url}`;
+                                    return url;
+                                };
+                                const imgSrc = pkg.imageData || resolveImageUrl(pkg.image);
                                 const cat = getCategoryInfo(pkg.category);
                                 return (
                                     <div key={pkg.id} className="adm-pkg-card">

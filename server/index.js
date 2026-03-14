@@ -8,8 +8,21 @@ import authRouter from './routes/auth.js';
 
 dotenv.config();
 
+import fs from 'fs';
+import path, { dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 const app = express();
 const PORT = process.env.PORT || 3001;
+
+// Ensure uploads directory exists
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+}
 
 // ── Middleware ────────────────────────────────────────────────────────────────
 app.use(cors({
@@ -17,6 +30,9 @@ app.use(cors({
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type']
 }));
+
+// Serve static uploaded files
+app.use('/uploads', express.static(uploadsDir));
 
 // Allow large base64 images (up to 10MB)
 app.use(express.json({ limit: '10mb' }));

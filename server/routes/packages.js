@@ -1,7 +1,46 @@
 import express from 'express';
 import pool from '../db.js';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const UPLOADS_DIR = path.join(__dirname, '..', 'uploads');
 
 const router = express.Router();
+
+// ── Helper: Save Base64 Image to Disk ─────────────────────────────────────────
+function saveImageLocally(base64Data, title) {
+    if (!base64Data || !base64Data.startsWith('data:image/')) return null;
+
+    try {
+        const matches = base64Data.match(/^data:image\/([A-Za-z-+\/]+);base64,(.+)$/);
+        if (!matches || matches.length !== 3) return null;
+
+        let extension = matches[1];
+        if (extension === 'jpeg') extension = 'jpg';
+
+        // Create slug from title
+        const slug = (title || 'package').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        const filename = `${slug}-${Date.now()}.${extension}`;
+        const filepath = path.join(UPLOADS_DIR, filename);
+
+        // Ensure directory exists
+        if (!fs.existsSync(UPLOADS_DIR)) {
+            fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+        }
+
+        const buffer = Buffer.from(matches[2], 'base64');
+        fs.writeFileSync(filepath, buffer);
+
+        // Return the public URL path
+        return `/uploads/${filename}`;
+    } catch (err) {
+        console.error('Error saving image locally:', err);
+        return null;
+    }
+}
 
 // ── GET all packages ──────────────────────────────────────────────────────────
 router.get('/', async (req, res) => {
@@ -47,10 +86,19 @@ router.get('/categories', async (req, res) => {
 
 // ── POST create package ───────────────────────────────────────────────────────
 router.post('/', async (req, res) => {
-    const { title, description, duration, price, category, image, imageData, highlights, places } = req.body;
+    let { title, description, duration, price, category, image, imageData, highlights, places } = req.body;
 
     if (!title) {
         return res.status(400).json({ error: 'Title is required' });
+    }
+
+    // Attempt to save uploaded base64 image locally
+    if (imageData && imageData.startsWith('data:image/')) {
+        const localPath = saveImageLocally(imageData, title);
+        if (localPath) {
+            image = localPath;
+            imageData = null; // discard massive base64 string from DB
+        }
     }
 
     try {
@@ -94,7 +142,16 @@ router.post('/', async (req, res) => {
 // ── PUT update package ────────────────────────────────────────────────────────
 router.put('/:id', async (req, res) => {
     const { id } = req.params;
-    const { title, description, duration, price, category, image, imageData, highlights, places } = req.body;
+    let { title, description, duration, price, category, image, imageData, highlights, places } = req.body;
+
+    // Attempt to save uploaded base64 image locally
+    if (imageData && imageData.startsWith('data:image/')) {
+        const localPath = saveImageLocally(imageData, title);
+        if (localPath) {
+            image = localPath;
+            imageData = null; // discard massive base64 string from DB
+        }
+    }
 
     try {
         const result = await pool.query(
