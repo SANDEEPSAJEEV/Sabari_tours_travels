@@ -1709,6 +1709,22 @@ select {
 
   .testimonials-grid {
     grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .testimonial-card {
+    padding: 20px;
+  }
+
+  .testimonial-text {
+    font-size: 0.95rem;
+    margin-bottom: 16px;
+  }
+
+  .testimonial-author-avatar {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
   }
 
   .footer-grid {
