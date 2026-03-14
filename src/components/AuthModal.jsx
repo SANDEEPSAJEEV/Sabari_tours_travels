@@ -5,28 +5,36 @@ export default function AuthModal({ isOpen, onClose }) {
     const [isLogin, setIsLogin] = useState(true);
     const [formData, setFormData] = useState({ name: '', email: '', password: '' });
     const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
     const { login, register } = useAuth();
 
     if (!isOpen) return null;
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+        setIsLoading(true);
 
-        if (isLogin) {
-            const res = login(formData.email, formData.password);
-            if (res.success) {
-                onClose();
+        try {
+            if (isLogin) {
+                const res = await login(formData.email, formData.password);
+                if (res.success) {
+                    onClose();
+                } else {
+                    setError(res.error);
+                }
             } else {
-                setError(res.error);
+                const res = await register(formData.name, formData.email, formData.password);
+                if (res.success) {
+                    onClose();
+                } else {
+                    setError(res.error);
+                }
             }
-        } else {
-            const res = register(formData.name, formData.email, formData.password);
-            if (res.success) {
-                onClose();
-            } else {
-                setError(res.error);
-            }
+        } catch (err) {
+            setError('An unexpected error occurred. Please try again.');
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -82,8 +90,13 @@ export default function AuthModal({ isOpen, onClose }) {
 
                     {error && <p className="form-error">{error}</p>}
 
-                    <button type="submit" className="btn-primary" style={{ width: '100%', marginTop: '16px' }}>
-                        {isLogin ? 'Sign In' : 'Sign Up'}
+                    <button
+                        type="submit"
+                        className="btn-primary"
+                        style={{ width: '100%', marginTop: '16px', opacity: isLoading ? 0.7 : 1 }}
+                        disabled={isLoading}
+                    >
+                        {isLoading ? 'Please wait...' : (isLogin ? 'Sign In' : 'Sign Up')}
                     </button>
                 </form>
 
