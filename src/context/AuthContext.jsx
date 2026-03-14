@@ -2,32 +2,11 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import { API_BASE_URL } from '../config';
 
 const AuthContext = createContext();
-
-const STORAGE_KEY = 'sabari-users';
 const SESSION_KEY = 'sabari-active-user';
 
-// Mock initial admin user
-const initialUsers = [
-    {
-        id: 1,
-        name: 'Admin',
-        email: 'admin',
-        password: '123',
-        role: 'admin'
-    }
-];
-
 export function AuthProvider({ children }) {
-    const [users, setUsers] = useState(() => {
-        try {
-            const stored = localStorage.getItem(STORAGE_KEY);
-            if (stored) return JSON.parse(stored);
-        } catch (e) {
-            console.error('Error reading users from localStorage:', e);
-        }
-        return initialUsers;
-    });
-
+    // We only need to track the active logged-in user in session storage.
+    // The master list of users lives in the PostgreSQL database now.
     const [currentUser, setCurrentUser] = useState(() => {
         try {
             const stored = sessionStorage.getItem(SESSION_KEY);
@@ -38,10 +17,7 @@ export function AuthProvider({ children }) {
         return null;
     });
 
-    useEffect(() => {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
-    }, [users]);
-
+    // Auto-save active user session
     useEffect(() => {
         if (currentUser) {
             sessionStorage.setItem(SESSION_KEY, JSON.stringify(currentUser));
@@ -50,51 +26,66 @@ export function AuthProvider({ children }) {
         }
     }, [currentUser]);
 
-    const login = (email, password) => {
-        const user = users.find(u =>
-            (u.email === email || (u.email === 'admin' && email === 'admin123')) &&
-            u.password === password
-        );
+    const login = async (email, password) => {
+        try {
+            const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
 
-        if (user) {
-            setCurrentUser(user);
-            return { success: true };
+            const data = await res.json();
+
+            if (res.ok && data.success) {
+                setCurrentUser(data.user);
+                return { success: true };
+            } else {
+                return { success: false, error: data.error || 'Invalid email or password' };
+            }
+        } catch (err) {
+            console.error('Login error:', err);
+            return { success: false, error: 'Network error communicating with server' };
         }
-        return { success: false, error: 'Invalid email or password' };
     };
 
     const register = async (name, email, password) => {
-        if (users.some(u => u.email === email)) {
-            return { success: false, error: 'Email already exists' };
-        }
-
-        const newUser = {
-            id: Date.now(),
-            name,
-            email,
-            password,
-            role: 'user'
-        };
-
-        // Also save to PostgreSQL enquiries table for marketing/admin tracking
         try {
-            await fetch(`${API_BASE_URL}/api/enquiries`, {
+            // First, register the user in the database auth table
+            const res = await fetch(`${API_BASE_URL}/api/auth/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    name,
-                    email,
-                    subject: 'New User Registration',
-                    source: 'Registration'
-                })
+                body: JSON.stringify({ name, email, password })
             });
-        } catch (err) {
-            console.error('Failed to save registration enquiry to database:', err);
-        }
 
-        setUsers([...users, newUser]);
-        setCurrentUser(newUser);
-        return { success: true };
+            const data = await res.json();
+
+            if (!res.ok || !data.success) {
+                return { success: false, error: data.error || 'Registration failed' };
+            }
+
+            // If successful, save event to enquiries table for marketing/admin tracking
+            try {
+                await fetch(`${API_BASE_URL}/api/enquiries`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name,
+                        email,
+                        subject: 'New User Registration',
+                        source: 'Registration'
+                    })
+                });
+            } catch (err) {
+                console.error('Failed to log registration enquiry:', err);
+            }
+
+            setCurrentUser(data.user);
+            return { success: true };
+
+        } catch (err) {
+            console.error('Registration error:', err);
+            return { success: false, error: 'Network error communicating with server' };
+        }
     };
 
     const logout = () => {

@@ -77,4 +77,32 @@ CREATE TABLE IF NOT EXISTS enquiries (
     created_at      TIMESTAMP DEFAULT NOW()
 );
 
-RAISE NOTICE 'Database setup complete! 5 default packages and enquiries table created.';
+-- ── Users Table ──────────────────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS users (
+    id              SERIAL PRIMARY KEY,
+    name            VARCHAR(255) NOT NULL,
+    email           VARCHAR(255) UNIQUE NOT NULL,
+    password        VARCHAR(255) NOT NULL,
+    role            VARCHAR(50) DEFAULT 'user',
+    created_at      TIMESTAMP DEFAULT NOW()
+);
+
+-- Insert Default Admin Account
+INSERT INTO users (name, email, password, role)
+VALUES ('Sabari Admin', 'admin', 'admin123', 'admin')
+ON CONFLICT (email) DO NOTHING;
+
+-- Settings table creation
+CREATE TABLE IF NOT EXISTS settings (
+    key VARCHAR(255) PRIMARY KEY,
+    value TEXT
+);
+
+-- Default Settings
+INSERT INTO settings (key, value) VALUES
+('whatsapp_number', '919876543210'),
+('phone_display', '+91 98765 43210'),
+('email', 'info@sabaritours.com'),
+('address', 'Sabari Tours and Travels, Near Railway Station, Aluva, Kerala'),
+('wa_message', 'Hi Sabari Tours! 👋 I''m interested in your tour packages. Can you help me plan a trip?')
+ON CONFLICT (key) DO NOTHING;

@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import packagesRouter from './routes/packages.js';
 import enquiriesRouter from './routes/enquiries.js';
 import settingsRouter from './routes/settings.js';
+import authRouter from './routes/auth.js';
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use('/api/packages', packagesRouter);
 app.use('/api/enquiries', enquiriesRouter);
 app.use('/api/settings', settingsRouter);
+app.use('/api/auth', authRouter);
 
 // Health check
 app.get('/api/health', (req, res) => {
