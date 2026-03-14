@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useSettings } from '../context/SettingsContext';
 import AuthModal from './AuthModal';
 
 export default function Navbar() {
@@ -7,6 +8,7 @@ export default function Navbar() {
     const [mobileOpen, setMobileOpen] = useState(false);
     const [authModalOpen, setAuthModalOpen] = useState(false);
     const { currentUser, logout, isAdmin } = useAuth();
+    const { getWhatsAppLink } = useSettings();
 
     useEffect(() => {
         const handleScroll = () => {
