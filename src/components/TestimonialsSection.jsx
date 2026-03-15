@@ -45,7 +45,7 @@ export default function TestimonialsSection() {
                                 {isOwner && (
                                     <button
                                         onClick={() => handleEditClick(t)}
-                                        style={{ position: 'absolute', top: '12px', right: canDelete ? '48px' : '12px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem', opacity: 0.7 }}
+                                        style={{ position: 'absolute', top: '12px', right: canDelete ? '52px' : '12px', background: 'var(--bg-glass)', border: '1px solid var(--border-color)', borderRadius: '4px', padding: '4px 8px', cursor: 'pointer', fontSize: '1rem', zIndex: 10 }}
                                         title="Edit Review"
                                     >
                                         ✏️
@@ -54,7 +54,7 @@ export default function TestimonialsSection() {
                                 {canDelete && (
                                     <button
                                         onClick={() => window.confirm('Delete this review?') && deleteReview(t.id)}
-                                        style={{ position: 'absolute', top: '12px', right: '12px', background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.2rem', opacity: 0.7 }}
+                                        style={{ position: 'absolute', top: '12px', right: '12px', background: 'rgba(255, 71, 71, 0.1)', border: '1px solid rgba(255,71,71,0.3)', borderRadius: '4px', padding: '4px 8px', cursor: 'pointer', fontSize: '1rem', zIndex: 10 }}
                                         title="Delete Review"
                                     >
                                         🗑️
