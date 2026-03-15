@@ -50,13 +50,12 @@ export default function Hero() {
                 </div>
 
                 <h1 className="hero-title">
-                    Discover the Magic of<br />
-                    <span className="highlight">God's Own Country</span>
+                    Explore Kerala's Best with<br />
+                    <span className="highlight">Sabari Tours</span>
                 </h1>
 
                 <p className="hero-subtitle">
-                    Experience unforgettable journeys across Kerala and beyond with Sabari Tours and Travels.
-                    Premium packages for pilgrimages, family tours, and adventure trips.
+                    Your trusted partner for unforgettable pilgrimages, family vacations, and adventures across God's Own Country.
                 </p>
 
                 <div className="hero-actions">
