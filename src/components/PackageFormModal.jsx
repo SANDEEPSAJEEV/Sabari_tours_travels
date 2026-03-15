@@ -171,13 +171,12 @@ export default function PackageFormModal({ isOpen, onClose, editingPkg }) {
                                         />
                                     </div>
                                     <div className="pkg-field">
-                                        <label>Tariff / Price *</label>
+                                        <label>Tariff / Price</label>
                                         <input
                                             type="text"
                                             value={form.price}
                                             onChange={e => setForm(f => ({ ...f, price: e.target.value }))}
-                                            placeholder="e.g., ₹8,999"
-                                            required
+                                            placeholder="e.g., ₹8,999 (Optional)"
                                         />
                                     </div>
                                 </div>

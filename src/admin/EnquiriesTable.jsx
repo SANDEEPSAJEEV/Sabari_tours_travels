@@ -125,6 +125,7 @@ export default function EnquiriesTable() {
                             <tr>
                                 <th>Date</th>
                                 <th>Name</th>
+                                <th>Phone</th>
                                 <th>Email</th>
                                 <th>Source</th>
                                 <th>Subject</th>
@@ -136,6 +137,7 @@ export default function EnquiriesTable() {
                                 <tr key={enquiry.id}>
                                     <td>{new Date(enquiry.created_at).toLocaleDateString()}</td>
                                     <td><strong>{enquiry.name}</strong></td>
+                                    <td>{enquiry.phone || '-'}</td>
                                     <td>{enquiry.email}</td>
                                     <td>
                                         <span className={`category-tag ${enquiry.source?.toLowerCase() === 'registration' ? 'kerala' : 'outside'}`}>
