@@ -46,6 +46,11 @@ export default function Navbar() {
                                 <div style={{ padding: '6px 12px', background: 'var(--bg-glass)', borderRadius: 'var(--radius-full)', fontSize: '0.85rem' }}>
                                     👤 {currentUser.name} {isAdmin && <span style={{ color: 'var(--accent-400)', fontWeight: 'bold' }}>(Admin)</span>}
                                 </div>
+                                {isAdmin && (
+                                    <button onClick={() => window.location.href = '/admin/dashboard'} className="btn-secondary" style={{ padding: '8px 16px', fontSize: '0.85rem', background: 'var(--gradient-primary)', color: 'black', border: 'none' }}>
+                                        Dashboard
+                                    </button>
+                                )}
                                 <button onClick={logout} className="btn-secondary" style={{ padding: '8px 16px', fontSize: '0.85rem' }}>
                                     Logout
                                 </button>
@@ -89,6 +94,11 @@ export default function Navbar() {
                         <div style={{ color: 'var(--accent-400)', padding: '16px 24px', borderTop: '1px solid var(--border-color)', marginTop: '8px' }}>
                             Hello, {currentUser.name}
                         </div>
+                        {isAdmin && (
+                            <button onClick={() => { setMobileOpen(false); window.location.href = '/admin/dashboard'; }} className="btn-secondary" style={{ margin: '0 24px 12px', background: 'var(--gradient-primary)', color: 'black', border: 'none' }}>
+                                Admin Dashboard
+                            </button>
+                        )}
                         <button onClick={() => { logout(); setMobileOpen(false); }} className="btn-secondary" style={{ margin: '0 24px 16px' }}>Logout</button>
                     </>
                 ) : (
