@@ -45,10 +45,6 @@ export default function Hero() {
             </div>
 
             <div className="hero-content">
-                <div className="hero-badge">
-                    ✨ Trusted by 5000+ Happy Travelers
-                </div>
-
                 <h1 className="hero-title">
                     Explore Kerala's Best with<br />
                     <span className="highlight">Sabari Tours</span>
