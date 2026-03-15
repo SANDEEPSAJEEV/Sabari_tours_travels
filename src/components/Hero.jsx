@@ -1,8 +1,10 @@
 import { useMemo } from 'react';
+import { useSettings } from '../context/SettingsContext';
 import busLeft from '../assets/images/sabari1.jpg';
 import busRight from '../assets/images/sabari2.jpg';
 
 export default function Hero() {
+    const { getWhatsAppLink } = useSettings();
     const particles = useMemo(() => {
         return Array.from({ length: 20 }, (_, i) => ({
             id: i,
@@ -66,7 +68,7 @@ export default function Hero() {
                         🗺️ Explore Packages
                     </a>
                     <a
-                        href="https://wa.me/919876543210?text=Hi%20Sabari%20Tours!%20I'm%20interested%20in%20your%20tour%20packages.%20Can%20you%20help%20me%20plan%20a%20trip?"
+                        href={getWhatsAppLink("Hi Sabari Tours! 👋 I'm interested in your tour packages. Can you help me plan a trip?")}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="btn-secondary"

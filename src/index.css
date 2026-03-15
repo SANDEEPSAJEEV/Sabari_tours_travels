@@ -567,8 +567,35 @@ select {
 }
 
 @media (max-width: 768px) {
-  .hero-visuals {
-    display: none;
+  .hero-bus-wrapper {
+    width: 260px;
+    bottom: -10px;
+  }
+
+  .hero-bus-wrapper.left {
+    left: -100px;
+  }
+
+  .hero-bus-wrapper.right {
+    right: -100px;
+  }
+
+  .hero-bus-img {
+    opacity: 0.4;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-bus-wrapper {
+    width: 200px;
+  }
+
+  .hero-bus-wrapper.left {
+    left: -80px;
+  }
+
+  .hero-bus-wrapper.right {
+    right: -80px;
   }
 }
 
@@ -1736,7 +1763,9 @@ select {
   }
 
   .hero-title {
-    font-size: 2.4rem;
+    font-size: clamp(2rem, 8vw, 2.8rem);
+    line-height: 1.2;
+    margin-bottom: 20px;
   }
 
   .hero-subtitle {
@@ -1811,7 +1840,8 @@ select {
 
 @media (max-width: 480px) {
   .hero-title {
-    font-size: 2rem;
+    font-size: 1.8rem;
+    line-height: 1.25;
   }
 
   .hero-actions {
