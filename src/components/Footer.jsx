@@ -1,4 +1,5 @@
 import { useSettings } from '../context/SettingsContext';
+import logoImg from '../assets/images/logo.jpg.png';
 
 export default function Footer() {
     const currentYear = new Date().getFullYear();
@@ -10,7 +11,7 @@ export default function Footer() {
                 <div className="footer-grid">
                     <div className="footer-brand">
                         <div className="navbar-logo" style={{ marginBottom: '4px' }}>
-                            <div className="navbar-logo-icon">🌴</div>
+                            <img src={logoImg} alt="Sabari Tours" className="navbar-logo-img" style={{ width: '40px', height: '40px' }} />
                             <span>Sabari Tours</span>
                         </div>
                         <p>
@@ -32,12 +33,10 @@ export default function Footer() {
                     <div>
                         <h4 className="footer-heading">Destinations</h4>
                         <div className="footer-links">
-                            <a href="#packages">Munnar</a>
-                            <a href="#packages">Alleppey</a>
-                            <a href="#packages">Wayanad</a>
-                            <a href="#packages">Goa</a>
-                            <a href="#packages">Ooty</a>
-                            <a href="#packages">Rameswaram</a>
+                            <a href="#packages">Kerala: God's Own Country</a>
+                            <a href="#packages">Beyond Kerala Escapes</a>
+                            <a href="#packages">Majestic North India Trips</a>
+                            <a href="#packages">Spiritual Pilgrimages</a>
                         </div>
                     </div>
 
