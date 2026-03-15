@@ -104,8 +104,8 @@ router.delete('/:id', async (req, res) => {
         const review = checkResult.rows[0];
 
         // SECURITY: Only the author OR an Admin can delete a review.
-        const isOwner = review.user_id === userId;
         const isAdmin = role === 'admin';
+        const isOwner = review.user_id === userId || review.user_id?.toString() === userId?.toString();
 
         if (!isOwner && !isAdmin) {
             return res.status(403).json({ error: 'You do not have permission to delete this review.' });
