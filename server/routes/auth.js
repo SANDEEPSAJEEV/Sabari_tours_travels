@@ -5,10 +5,10 @@ const router = Router();
 
 // POST /api/auth/register
 router.post('/register', async (req, res) => {
-    const { name, email, password } = req.body;
+    const { name, email, phone, password } = req.body;
 
-    if (!name || !email || !password) {
-        return res.status(400).json({ error: 'Name, email, and password are required' });
+    if (!name || !email || !password || !phone) {
+        return res.status(400).json({ error: 'Name, email, phone number, and password are required' });
     }
 
     try {
@@ -20,8 +20,8 @@ router.post('/register', async (req, res) => {
 
         // Insert new user
         const result = await db.query(
-            'INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING id, name, email, role',
-            [name, email, password]
+            'INSERT INTO users (name, email, phone, password) VALUES ($1, $2, $3, $4) RETURNING id, name, email, phone, role',
+            [name, email, phone, password]
         );
 
         const newUser = result.rows[0];

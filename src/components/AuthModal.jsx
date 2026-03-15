@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 
 export default function AuthModal({ isOpen, onClose }) {
     const [isLogin, setIsLogin] = useState(true);
-    const [formData, setFormData] = useState({ name: '', email: '', password: '' });
+    const [formData, setFormData] = useState({ name: '', email: '', phone: '', password: '' });
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const { login, register } = useAuth();
@@ -24,7 +24,7 @@ export default function AuthModal({ isOpen, onClose }) {
                     setError(res.error);
                 }
             } else {
-                const res = await register(formData.name, formData.email, formData.password);
+                const res = await register(formData.name, formData.email, formData.phone, formData.password);
                 if (res.success) {
                     onClose();
                 } else {
@@ -60,6 +60,20 @@ export default function AuthModal({ isOpen, onClose }) {
                                 onChange={e => setFormData({ ...formData, name: e.target.value })}
                                 required
                                 placeholder="John Doe"
+                            />
+                        </div>
+                    )}
+
+                    {!isLogin && (
+                        <div className="form-group">
+                            <label htmlFor="auth-phone">Mobile Number</label>
+                            <input
+                                id="auth-phone"
+                                type="tel"
+                                value={formData.phone}
+                                onChange={e => setFormData({ ...formData, phone: e.target.value })}
+                                required
+                                placeholder="+91 98765 43210"
                             />
                         </div>
                     )}

@@ -26,6 +26,11 @@ pool.connect(async (err, client, release) => {
 
         // Ensure the reviews table exists on the production database
         try {
+            // Ensure users table has phone column
+            await client.query(`
+                ALTER TABLE users ADD COLUMN IF NOT EXISTS phone VARCHAR(20);
+            `);
+
             await client.query(`
                 CREATE TABLE IF NOT EXISTS reviews (
                     id SERIAL PRIMARY KEY,
