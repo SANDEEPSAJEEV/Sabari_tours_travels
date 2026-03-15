@@ -37,9 +37,29 @@ pool.connect(async (err, client, release) => {
                     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
                 );
             `);
-            console.log('✅ Reviews table verified/created successfully.');
+
+            // Ensure settings table exists
+            await client.query(`
+                CREATE TABLE IF NOT EXISTS settings (
+                    key VARCHAR(255) PRIMARY KEY,
+                    value TEXT
+                );
+            `);
+
+            // Insert default settings if they don't exist
+            await client.query(`
+                INSERT INTO settings (key, value) VALUES
+                ('whatsapp_number', '919876543210'),
+                ('phone_display', '+91 98765 43210'),
+                ('email', 'info@sabaritours.com'),
+                ('address', 'Sabari Tours and Travels, Near Railway Station, Aluva, Kerala'),
+                ('wa_message', 'Hi Sabari Tours! 👋 I''m interested in your tour packages. Can you help me plan a trip?')
+                ON CONFLICT (key) DO NOTHING;
+            `);
+
+            console.log('✅ Production Database tables verified/created successfully.');
         } catch (tableErr) {
-            console.error('❌ Error creating reviews table:', tableErr.message);
+            console.error('❌ Error creating tables:', tableErr.message);
         } finally {
             release();
         }
