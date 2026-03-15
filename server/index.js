@@ -29,7 +29,7 @@ if (!fs.existsSync(uploadsDir)) {
 app.use(cors({
     origin: '*', // Allow Vercel or any other deployed frontend to access the API
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type']
+    allowedHeaders: ['Content-Type', 'x-user-id', 'x-user-role']
 }));
 
 // Serve static uploaded files
