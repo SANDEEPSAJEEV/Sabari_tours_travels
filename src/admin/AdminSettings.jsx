@@ -30,7 +30,12 @@ export default function AdminSettings() {
     };
 
     // Generate live preview of the WhatsApp link
-    const previewLink = `https://wa.me/${form.whatsapp_number}`;
+    const getCleanNumber = (num) => {
+        let clean = (num || '').toString().replace(/\D/g, '');
+        if (clean.length === 10) clean = '91' + clean;
+        return clean;
+    };
+    const previewLink = `https://wa.me/${getCleanNumber(form.whatsapp_number)}`;
 
     return (
         <div className="admin-packages-container">
@@ -75,16 +80,16 @@ export default function AdminSettings() {
                         </div>
                     </div>
                     <div className="settings-field">
-                        <label>WhatsApp Number (international format, no + or spaces)</label>
+                        <label>WhatsApp Number (Include country code, e.g., 918157846024)</label>
                         <input
                             type="text"
                             name="whatsapp_number"
                             value={form.whatsapp_number}
                             onChange={handleChange}
-                            placeholder="e.g., 919876543210"
+                            placeholder="e.g., 918157846024 or 8157846024"
                         />
                         <div className="settings-hint">
-                            🔗 Preview link: <a href={previewLink} target="_blank" rel="noopener noreferrer" style={{ color: '#22c55e' }}>{previewLink}</a>
+                            💡 If you provide 10 digits, we'll automatically add the +91 code.
                         </div>
                     </div>
                     <div className="settings-field">

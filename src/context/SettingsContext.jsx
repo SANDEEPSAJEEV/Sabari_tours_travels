@@ -24,6 +24,7 @@ export function SettingsProvider({ children }) {
             const res = await fetch(`${API_BASE_URL}/api/settings`);
             if (res.ok) {
                 const data = await res.json();
+                console.log('Fetched Settings:', data);
                 setSettings({ ...DEFAULT_SETTINGS, ...data });
             }
         } catch (err) {
@@ -35,16 +36,22 @@ export function SettingsProvider({ children }) {
 
     const updateSettings = async (newSettings) => {
         try {
+            console.log('Updating settings with:', newSettings);
             const res = await fetch(`${API_BASE_URL}/api/settings`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newSettings)
             });
-            if (!res.ok) throw new Error('Failed to save settings');
+            if (!res.ok) {
+                const errText = await res.text();
+                throw new Error(`Failed to save settings: ${errText}`);
+            }
             const updated = await res.json();
+            console.log('Settings updated successfully:', updated);
             setSettings({ ...DEFAULT_SETTINGS, ...updated });
             return { success: true };
         } catch (err) {
+            console.error('Update settings failed:', err);
             return { success: false, error: err.message };
         }
     };
@@ -52,10 +59,18 @@ export function SettingsProvider({ children }) {
     // Build WhatsApp link from current settings
     const getWhatsAppLink = (customMessage) => {
         // Strip non-digits for the WhatsApp API
-        const rawNumber = settings.whatsapp_number || '919876543210';
-        const cleanNumber = rawNumber.replace(/\D/g, '');
+        const rawNumber = (settings.whatsapp_number || '919876543210').toString();
+        let cleanNumber = rawNumber.replace(/\D/g, '');
+
+        // Auto-prepend 91 if it's a 10-digit number (common for India)
+        if (cleanNumber.length === 10) {
+            cleanNumber = '91' + cleanNumber;
+        }
+
         const message = customMessage || settings.wa_message || "Hi Sabari Tours!";
-        return `https://wa.me/${cleanNumber}?text=${encodeURIComponent(message)}`;
+        const link = `https://wa.me/${cleanNumber}?text=${encodeURIComponent(message)}`;
+        console.log(`Generated WA link: ${link}`);
+        return link;
     };
 
     return (

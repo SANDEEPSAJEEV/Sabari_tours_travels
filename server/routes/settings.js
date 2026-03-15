@@ -18,6 +18,9 @@ router.get('/', async (req, res) => {
 // PUT update one or many settings { key: value, key2: value2 }
 router.put('/', async (req, res) => {
     const updates = req.body;
+    console.log('--- Incoming Settings Update ---');
+    console.log(updates);
+
     if (!updates || typeof updates !== 'object') {
         return res.status(400).json({ error: 'Invalid settings data' });
     }
@@ -30,10 +33,12 @@ router.put('/', async (req, res) => {
             )
         );
         await Promise.all(promises);
+
         // Return updated settings
         const result = await db.query('SELECT key, value FROM settings');
         const settings = {};
         result.rows.forEach(row => { settings[row.key] = row.value; });
+        console.log('Updated DB settings:', settings);
         res.json(settings);
     } catch (err) {
         console.error('Error updating settings:', err);
