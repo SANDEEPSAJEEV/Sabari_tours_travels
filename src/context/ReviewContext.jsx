@@ -88,7 +88,7 @@ export function ReviewProvider({ children }) {
             const res = await fetch(`${API_BASE_URL}/api/reviews/${id}`, {
                 method: 'DELETE',
                 headers: {
-                    'x-user-id': currentUser.id.toString(),
+                    'x-user-id': currentUser.id ? currentUser.id.toString() : '',
                     'x-user-role': currentUser.role || 'user'
                 }
             });
