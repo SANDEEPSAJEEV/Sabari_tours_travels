@@ -2779,8 +2779,47 @@ select {
 }
 
 @media (max-width: 768px) {
+  .admindash {
+    flex-direction: column;
+  }
+
   .admindash-sidebar {
+    width: 100%;
+    height: auto;
+    min-height: auto;
+    position: static;
+    border-right: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    display: block;
+    /* Override default flex column to allow scrollable nav */
+  }
+
+  .admindash-brand {
+    padding: 16px;
+  }
+
+  .admindash-nav {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 0 16px 16px 16px;
+    gap: 8px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .admindash-nav::-webkit-scrollbar {
     display: none;
+  }
+
+  .admindash-nav-item {
+    white-space: nowrap;
+    margin-bottom: 0;
+    flex-shrink: 0;
+  }
+
+  .admindash-sidebar-bottom {
+    display: none;
+    /* Hide profile/logout to save space */
   }
 
   .admindash-main {
