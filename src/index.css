@@ -280,6 +280,13 @@ select {
   font-size: 1.5rem;
 }
 
+.navbar-logo-img {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+}
+
 .navbar-logo-icon {
   width: 44px;
   height: 44px;
@@ -297,10 +304,9 @@ select {
     gap: 8px;
   }
 
-  .navbar-logo-icon {
-    width: 36px;
-    height: 36px;
-    font-size: 1.1rem;
+  .navbar-logo-img {
+    width: 38px;
+    height: 38px;
   }
 }
 
@@ -1834,6 +1840,20 @@ select {
   .whatsapp-btn {
     width: 56px;
     height: 56px;
+  }
+}
+
+.navbar-logo-img {
+  height: 56px;
+}
+
+.hero-section {
+  padding: 120px 0 80px;
+}
+
+@media (max-width: 480px) {
+  .hero-section {
+    padding: 140px 0 60px;
   }
 }
 

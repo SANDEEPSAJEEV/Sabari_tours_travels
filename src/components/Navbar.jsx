@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useSettings } from '../context/SettingsContext';
 import AuthModal from './AuthModal';
+import logoImg from '../assets/images/logo.jpg.png';
 
 export default function Navbar() {
     const [scrolled, setScrolled] = useState(false);
@@ -31,7 +32,7 @@ export default function Navbar() {
             <nav className={`navbar ${scrolled ? 'scrolled' : ''}`} id="navbar">
                 <div className="container navbar-inner">
                     <a href="#" className="navbar-logo" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-                        <div className="navbar-logo-icon">🌴</div>
+                        <img src={logoImg} alt="Sabari Tours" className="navbar-logo-img" />
                         <span>Sabari Tours</span>
                     </a>
 
