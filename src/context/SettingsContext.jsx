@@ -51,9 +51,11 @@ export function SettingsProvider({ children }) {
 
     // Build WhatsApp link from current settings
     const getWhatsAppLink = (customMessage) => {
-        const number = settings.whatsapp_number || '919876543210';
+        // Strip non-digits for the WhatsApp API
+        const rawNumber = settings.whatsapp_number || '919876543210';
+        const cleanNumber = rawNumber.replace(/\D/g, '');
         const message = customMessage || settings.wa_message || "Hi Sabari Tours!";
-        return `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
+        return `https://wa.me/${cleanNumber}?text=${encodeURIComponent(message)}`;
     };
 
     return (
