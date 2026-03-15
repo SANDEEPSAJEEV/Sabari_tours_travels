@@ -76,25 +76,6 @@ export default function Hero() {
                         💬 Chat With Us
                     </a>
                 </div>
-
-                <div className="hero-stats">
-                    <div className="hero-stat">
-                        <div className="hero-stat-number">5000+</div>
-                        <div className="hero-stat-label">Happy Travelers</div>
-                    </div>
-                    <div className="hero-stat">
-                        <div className="hero-stat-number">150+</div>
-                        <div className="hero-stat-label">Tour Packages</div>
-                    </div>
-                    <div className="hero-stat">
-                        <div className="hero-stat-number">50+</div>
-                        <div className="hero-stat-label">Destinations</div>
-                    </div>
-                    <div className="hero-stat">
-                        <div className="hero-stat-number">12+</div>
-                        <div className="hero-stat-label">Years Experience</div>
-                    </div>
-                </div>
             </div>
 
             <div className="scroll-indicator">

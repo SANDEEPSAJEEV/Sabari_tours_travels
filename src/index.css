@@ -581,7 +581,7 @@ select {
   }
 
   .hero-bus-img {
-    opacity: 0.4;
+    opacity: 0.65;
   }
 }
 
@@ -1877,13 +1877,13 @@ select {
   height: 56px;
 }
 
-.hero-section {
+.hero {
   padding: 120px 0 80px;
 }
 
 @media (max-width: 480px) {
-  .hero-section {
-    padding: 140px 0 60px;
+  .hero {
+    padding: 160px 0 60px;
   }
 }
 
