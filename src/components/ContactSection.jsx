@@ -295,13 +295,20 @@ export default function ContactSection() {
                     border: 1px solid rgba(239, 68, 68, 0.2);
                 }
 
-                @media (max-width: 992px) {
+                @media (max-width: 768px) {
                     .contact-grid {
                         grid-template-columns: 1fr;
                         gap: 40px;
                     }
+                    .form-row { 
+                        grid-template-columns: 1fr; 
+                        gap: 0; 
+                    }
+                    .section-title, .section-subtitle {
+                        text-align: center !important;
+                    }
                 }
-                @media (max-width: 576px) {
+                @media (max-width: 480px) {
                     .contact-section { padding: 40px 0; }
                     .form-row { grid-template-columns: 1fr; gap: 0; }
                     .contact-form-card { padding: 25px 20px; border-radius: 16px; }
