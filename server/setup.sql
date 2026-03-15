@@ -106,3 +106,14 @@ INSERT INTO settings (key, value) VALUES
 ('address', 'Sabari Tours and Travels, Near Railway Station, Aluva, Kerala'),
 ('wa_message', 'Hi Sabari Tours! 👋 I''m interested in your tour packages. Can you help me plan a trip?')
 ON CONFLICT (key) DO NOTHING;
+
+-- ── Reviews Table ────────────────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS reviews (
+    id              SERIAL PRIMARY KEY,
+    user_id         INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    name            VARCHAR(100) NOT NULL,
+    location        VARCHAR(100),
+    rating          INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
+    text            TEXT NOT NULL,
+    created_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);

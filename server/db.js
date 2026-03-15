@@ -16,14 +16,33 @@ const pool = new Pool({
         : false
 });
 
-// Test connection on startup
-pool.connect((err, client, release) => {
+// Test connection on startup and initialize schema
+pool.connect(async (err, client, release) => {
     if (err) {
         console.error('❌ PostgreSQL connection failed:', err.message);
         console.error('   Check your .env file credentials and make sure PostgreSQL is running.');
     } else {
         console.log('✅ Connected to PostgreSQL database:', process.env.DB_NAME || 'sabari_tours');
-        release();
+
+        // Ensure the reviews table exists on the production database
+        try {
+            await client.query(`
+                CREATE TABLE IF NOT EXISTS reviews (
+                    id SERIAL PRIMARY KEY,
+                    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                    name VARCHAR(100) NOT NULL,
+                    location VARCHAR(100),
+                    rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
+                    text TEXT NOT NULL,
+                    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+                );
+            `);
+            console.log('✅ Reviews table verified/created successfully.');
+        } catch (tableErr) {
+            console.error('❌ Error creating reviews table:', tableErr.message);
+        } finally {
+            release();
+        }
     }
 });
 
